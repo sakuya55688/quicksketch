@@ -1,4 +1,5 @@
-import "./Canvas.css"
+import "./Canvas.css";
+import { useState } from "react";
 
 const Canvas = () => {
     
@@ -56,6 +57,10 @@ const Canvas = () => {
     return ( 
         <>
             <canvas id="canvas"></canvas>
+
+            <div className="color-blocks">
+
+            </div>
         </>
      );
 }
