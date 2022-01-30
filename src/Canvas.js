@@ -1,13 +1,16 @@
 import "./Canvas.css";
 import { useState, useEffect, useRef } from "react";
 
+
 const Canvas = () => {
 
     const commonColors = ["red","blue","yellow","green","purple"];
 
     const [isDrawing, setIsDrawing] = useState(false);
-    const [lineWidth, setLineWidth] = useState(1.7);
+    const [lineWidth, setLineWidth] = useState(5);
     const [lineColor, setLineColor] = useState("black");
+    
+    const [pressure, setPressure] = useState(0);
 
     const canvasRef = useRef(null);
     const ctxRef = useRef(null);
@@ -22,52 +25,62 @@ const Canvas = () => {
         const ctx = canvas.getContext('2d');
         
         ctx.lineCap = "round";
+        ctx.lineJoin = "round";
+        ctx.fillStyle = "white";
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
         ctxRef.current = ctx;
 
     }, []);
 
-
     
-    const startDrawing = ({nativeEvent, pressure}) => {
+    const startDrawing = ({nativeEvent, pressure, pointerType}) => {
         setIsDrawing(true);
         const {offsetX , offsetY} = nativeEvent;
-        /* Draw the Dot Possible */
-        ctxRef.current.lineWidth = lineWidth * pressure * 4.5;
+        
+        ctxRef.current.lineWidth = lineWidth * pressure * 2;
         ctxRef.current.strokeStyle = lineColor;
-
-        ctxRef.current.lineTo(offsetX , offsetY);
-        ctxRef.current.stroke();
-        draw({nativeEvent});
-
-        //console.log(pressure * 8)
+        
+        /* Draw the Dot at pen down */
+        
+        //ctxRef.current.moveTo(offsetX , offsetY);
+        //ctxRef.current.stroke();
+        draw({nativeEvent, pressure, pointerType});
+        
         
     }
     const finishDrawing = (e) => {
-        setIsDrawing(false);
+        setIsDrawing(false);      
         ctxRef.current.beginPath();
     }
-    function changeCursor(){
-        canvasRef.current.style.cursor = "crosshair";
-    }
-    const draw = ({nativeEvent,pressure}) => {
+    
+    const draw = ({nativeEvent, pressure, pointerType}) => {
         
         if(!isDrawing) return;
         
         const {offsetX, offsetY} = nativeEvent;
-        ctxRef.current.lineWidth = lineWidth * pressure * 5;
-
+        //detect pressure when you draw
+        ctxRef.current.lineWidth = lineWidth * pressure * 2 ;
+        
         ctxRef.current.lineTo(offsetX, offsetY);
         ctxRef.current.stroke();
-
+        
+        //make it smoother
         ctxRef.current.beginPath();
-        ctxRef.current.lineTo(offsetX, offsetY);
-
-        console.log(lineColor);
+        ctxRef.current.moveTo(offsetX, offsetY);
+        
+        
+       
     }
 
+    function clearCanvas(){
+        ctxRef.current.fillStyle = "white";
+        ctxRef.current.clearRect(0, 0, canvasRef.current.width, canvasRef.current.height);
+        ctxRef.current.fillRect(0, 0, canvasRef.current.width, canvasRef.current.height);
+    }
     
-    function changeColor(value){
-        let newColor = "" + value;
+    function changeColor(id){
+
+        let newColor = "" + id;
         setLineColor(newColor);
         
     }
@@ -75,18 +88,39 @@ const Canvas = () => {
         setLineWidth(newWidth);
     }
 
+    function uploadImage(e){
+        let reader = new FileReader();
+        reader.onload = (event) => {
+            //open menu to select image
+            let img = new Image();
+            img.onload = () => {
+                //clear canvas before drawing new one
+                clearCanvas();
+
+                //draw according to rasio
+                ctxRef.current.drawImage(img,0,0,
+                    canvasRef.current.height * img.width / img.height,
+                    canvasRef.current.height);
+            }
+            img.src = event.target.result;
+        }
+        reader.readAsDataURL(e.target.files[0]);
+    }
+    
+
     return ( 
         <>
             <canvas id="canvas"
-                onPointerDown={(e) => startDrawing(e)}
+                onPointerDown={startDrawing}
                 onPointerUp={finishDrawing}
                 onPointerMove={draw}
                 ref={canvasRef}
             ></canvas>
 
-            <div className="function-blocks">
-                <button className="undo-btn">Undo</button>
-                <button className="clear-btn">Clear</button>
+            <div className="tool-blocks">
+                <input type="file" className="upload" onChange={(e)=> uploadImage(e)}/>
+                <button id="undo" className="tool-btn">Undo</button>
+                <button id="clear" className="tool-btn" onClick={clearCanvas}>Clear</button>
                 <div className="color-blocks">
                     {
                     commonColors.map((color)=>(
@@ -98,8 +132,14 @@ const Canvas = () => {
                     }
                 </div>
                 <input type="color" onInput={(e) => changeColor(e.target.value)} className="color-picker" />
-                <input type="range" onInput={(e) => changeLineWidth(e.target.value)} className="line-width" />
+               
+                <input type="range" onInput={(e) => changeLineWidth(e.target.value)} className="width-bar" 
+                    min={1} max={100} step={0.5} value={lineWidth}
+                />
+                <output className="current-width">{lineWidth}</output>
+                
             </div>
+            
         </>
      );
 }
