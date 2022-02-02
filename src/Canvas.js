@@ -10,10 +10,13 @@ const Canvas = () => {
     const [lineWidth, setLineWidth] = useState(5);
     const [lineColor, setLineColor] = useState("black");
     
-    const [pressure, setPressure] = useState(0);
-
+    //canvas and context refference
     const canvasRef = useRef(null);
     const ctxRef = useRef(null);
+
+    //variable for undo
+    const restroreArray = useRef([]);
+    
 
     //initial canvas and context
     useEffect(() => {
@@ -32,7 +35,7 @@ const Canvas = () => {
 
     }, []);
 
-    
+    // drawing functions
     const startDrawing = ({nativeEvent, pressure, pointerType}) => {
         setIsDrawing(true);
         const {offsetX , offsetY} = nativeEvent;
@@ -50,7 +53,16 @@ const Canvas = () => {
     }
     const finishDrawing = (e) => {
         setIsDrawing(false);      
-        ctxRef.current.beginPath();
+        ctxRef.current.beginPath(); //cut the previous line
+
+        //add imgae data in to restoreArray to undo
+        if(restroreArray.current.length > 50){
+            restroreArray.current.shift();
+        }
+
+        if(e.type === "pointerup"){
+            storeCurrentData();
+        }
     }
     
     const draw = ({nativeEvent, pressure, pointerType}) => {
@@ -67,15 +79,38 @@ const Canvas = () => {
         //make it smoother
         ctxRef.current.beginPath();
         ctxRef.current.moveTo(offsetX, offsetY);
-        
-        
-       
+           
     }
-
+    
+    // tool buttons 
     function clearCanvas(){
         ctxRef.current.fillStyle = "white";
         ctxRef.current.clearRect(0, 0, canvasRef.current.width, canvasRef.current.height);
         ctxRef.current.fillRect(0, 0, canvasRef.current.width, canvasRef.current.height);
+    
+        storeCurrentData(); //clear is also a state 
+        
+    }
+    function undo(){
+        if(restroreArray.current.length > 1){
+    
+            restroreArray.current.pop();
+            ctxRef.current.putImageData(restroreArray.current[restroreArray.current.length-1], 0, 0);
+        }
+        else if(restroreArray.current.length === 1){
+            restroreArray.current.pop();
+            clearCanvas();
+        }
+
+        console.log(restroreArray.current);
+    }
+
+    // add new canvas data to restore array
+    function storeCurrentData(){
+        restroreArray.current.push(
+            ctxRef.current.getImageData(
+                0,0,canvasRef.current.width,canvasRef.current.height
+        ));
     }
     
     function changeColor(id){
@@ -95,16 +130,18 @@ const Canvas = () => {
             let img = new Image();
             img.onload = () => {
                 //clear canvas before drawing new one
-                clearCanvas();
+                //clearCanvas();
 
                 //draw according to rasio
                 ctxRef.current.drawImage(img,0,0,
                     canvasRef.current.height * img.width / img.height,
                     canvasRef.current.height);
+                storeCurrentData();
             }
             img.src = event.target.result;
         }
         reader.readAsDataURL(e.target.files[0]);
+
     }
     
 
@@ -113,13 +150,14 @@ const Canvas = () => {
             <canvas id="canvas"
                 onPointerDown={startDrawing}
                 onPointerUp={finishDrawing}
+                onPointerOut={finishDrawing}
                 onPointerMove={draw}
                 ref={canvasRef}
             ></canvas>
 
             <div className="tool-blocks">
                 <input type="file" className="upload" onChange={(e)=> uploadImage(e)}/>
-                <button id="undo" className="tool-btn">Undo</button>
+                <button id="undo" className="tool-btn" onClick={undo}>Undo</button>
                 <button id="clear" className="tool-btn" onClick={clearCanvas}>Clear</button>
                 <div className="color-blocks">
                     {
