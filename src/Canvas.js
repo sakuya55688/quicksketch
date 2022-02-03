@@ -1,10 +1,10 @@
 import "./Canvas.css";
+import Tools from "./Tools";
 import { useState, useEffect, useRef } from "react";
 
 
-const Canvas = () => {
+const Canvas = ({imageData}) => {
 
-    const commonColors = ["red","blue","yellow","green","purple"];
 
     const [isDrawing, setIsDrawing] = useState(false);
     const [lineWidth, setLineWidth] = useState(5);
@@ -22,8 +22,8 @@ const Canvas = () => {
     useEffect(() => {
 
         const canvas = canvasRef.current;
-        canvas.height = 400;
-        canvas.width = 800;
+        canvas.height = 500;//window.innerHeight/1.25;
+        canvas.width = 600;//window.innerWidth/1.25;
         
         const ctx = canvas.getContext('2d');
         
@@ -32,21 +32,22 @@ const Canvas = () => {
         ctx.fillStyle = "white";
         ctx.fillRect(0, 0, canvas.width, canvas.height);
         ctxRef.current = ctx;
-
+        
+        drawImage();
     }, []);
 
     // drawing functions
     const startDrawing = ({nativeEvent, pressure, pointerType}) => {
+        
+        const {offsetX, offsetY} = nativeEvent;
         setIsDrawing(true);
-        const {offsetX , offsetY} = nativeEvent;
         
         ctxRef.current.lineWidth = lineWidth * pressure * 2;
         ctxRef.current.strokeStyle = lineColor;
         
         /* Draw the Dot at pen down */
-        
-        //ctxRef.current.moveTo(offsetX , offsetY);
-        //ctxRef.current.stroke();
+        ctxRef.current.lineTo(offsetX , offsetY );
+        ctxRef.current.stroke();
         draw({nativeEvent, pressure, pointerType});
         
         
@@ -81,40 +82,8 @@ const Canvas = () => {
         ctxRef.current.moveTo(offsetX, offsetY);
            
     }
-    
-    // tool buttons 
-    function clearCanvas(){
-        ctxRef.current.fillStyle = "white";
-        ctxRef.current.clearRect(0, 0, canvasRef.current.width, canvasRef.current.height);
-        ctxRef.current.fillRect(0, 0, canvasRef.current.width, canvasRef.current.height);
-    
-        storeCurrentData(); //clear is also a state 
-        
-    }
-    function undo(){
-        if(restroreArray.current.length > 1){
-    
-            restroreArray.current.pop();
-            ctxRef.current.putImageData(restroreArray.current[restroreArray.current.length-1], 0, 0);
-        }
-        else if(restroreArray.current.length === 1){
-            restroreArray.current.pop();
-            clearCanvas();
-        }
 
-        console.log(restroreArray.current);
-    }
-
-    // add new canvas data to restore array
-    function storeCurrentData(){
-        restroreArray.current.push(
-            ctxRef.current.getImageData(
-                0,0,canvasRef.current.width,canvasRef.current.height
-        ));
-    }
-    
     function changeColor(id){
-
         let newColor = "" + id;
         setLineColor(newColor);
         
@@ -122,31 +91,34 @@ const Canvas = () => {
     function changeLineWidth(newWidth){
         setLineWidth(newWidth);
     }
-
-    function uploadImage(e){
-        let reader = new FileReader();
-        reader.onload = (event) => {
-            //open menu to select image
-            let img = new Image();
-            img.onload = () => {
-                //clear canvas before drawing new one
-                //clearCanvas();
-
-                //draw according to rasio
-                ctxRef.current.drawImage(img,0,0,
-                    canvasRef.current.height * img.width / img.height,
-                    canvasRef.current.height);
-                storeCurrentData();
-            }
-            img.src = event.target.result;
-        }
-        reader.readAsDataURL(e.target.files[0]);
-
-    }
     
+    // add new canvas data to restore array
+    function storeCurrentData(){
+        restroreArray.current.push(
+            ctxRef.current.getImageData(
+                0,0,canvasRef.current.width,canvasRef.current.height
+        ));
+    }
+
+    //Draw the image loaded from server 
+    function drawImage(){
+        let image = new Image();
+        image.src = imageData;
+        
+        image.onload = () => {
+            //draw according to rasio
+            ctxRef.current.drawImage(image,0,0,
+                canvasRef.current.height * image.width / image.height,
+                canvasRef.current.height);
+            
+            // add new canvas data to restore array
+            storeCurrentData();
+            
+        } 
+    }   
 
     return ( 
-        <>
+        <div className="canvas-block">
             <canvas id="canvas"
                 onPointerDown={startDrawing}
                 onPointerUp={finishDrawing}
@@ -154,31 +126,19 @@ const Canvas = () => {
                 onPointerMove={draw}
                 ref={canvasRef}
             ></canvas>
-
-            <div className="tool-blocks">
-                <input type="file" className="upload" onChange={(e)=> uploadImage(e)}/>
-                <button id="undo" className="tool-btn" onClick={undo}>Undo</button>
-                <button id="clear" className="tool-btn" onClick={clearCanvas}>Clear</button>
-                <div className="color-blocks">
-                    {
-                    commonColors.map((color)=>(
-                        <div className="color-block" id={color} key={color}
-                            style={{backgroundColor: "" + color}}
-                            onClick={(e) => changeColor(e.target.id)}
-                        ></div>
-                    ))
-                    }
-                </div>
-                <input type="color" onInput={(e) => changeColor(e.target.value)} className="color-picker" />
-               
-                <input type="range" onInput={(e) => changeLineWidth(e.target.value)} className="width-bar" 
-                    min={1} max={100} step={0.5} value={lineWidth}
-                />
-                <output className="current-width">{lineWidth}</output>
-                
-            </div>
             
-        </>
+            <Tools 
+                canvasRef={canvasRef}
+                ctxRef={ctxRef}
+                lineWidth={lineWidth}
+                restroreArray={restroreArray}
+                changeColor={changeColor}   
+                changeLineWidth={changeLineWidth}
+                storeCurrentData={storeCurrentData}
+            
+            ></Tools>
+            
+        </div>
      );
 }
  

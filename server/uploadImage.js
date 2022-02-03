@@ -1,4 +1,6 @@
 const fs = require("fs");
+const path = require("path");
+const cors = require("cors");
 const express = require("express");
 const app = express();
 
@@ -14,8 +16,28 @@ const randompick = () => {
     return images[random];
 }
 
+//setting cors from the client
+app.use("*", cors({
+    origin: "http://localhost:3000"
+}));
 
-app.use("/", (req, res) => {
-    
+app.get("/image", (req, res) => {
+    let imagePath = path.resolve(folderPath , randompick());
+    console.log(imagePath);
+    res.sendFile(imagePath);
 });
 
+// testing data
+app.get("/data", (req, res) => {
+    let data = 
+        {"products": [
+            {"goods": "さくらみこ 3周年", "price": 5200},
+            {"goods": "天音かなた 2周年", "price": 4500}
+        ]}
+    console.log(data);
+    res.send(data);
+});
+
+app.listen(8080, () => {
+    console.log("Image Server Running");
+})

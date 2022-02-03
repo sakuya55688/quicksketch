@@ -3,3 +3,9 @@
   padding: 0;
 
 }
+
+.canvas-holder {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+}

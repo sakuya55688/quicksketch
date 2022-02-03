@@ -1,6 +1,12 @@
 body {
   touch-action: none;
 }
+
+.canvas-block {
+  display: flex;
+  flex-direction: row;
+  
+}
 #canvas {
   display: block;
   border: 2px rgb(46, 46, 46) solid;
@@ -14,11 +20,16 @@ body {
 
 
 .tool-blocks {
-  height: 50px;
+  min-width: 100px;
+  height: 500px;
   display: flex;
-  justify-content: center;
-  flex-direction: row;
+  justify-content: space-evenly;
+  flex-direction: column;
   align-items: center;
+
+  background-color: #222;
+  border: 2px rgb(46, 46, 46) solid;
+  margin: 10px 5px;
 }
 .tool-btn {
   height: 40px;
@@ -26,7 +37,7 @@ body {
   color: #fff;
   background-color: #222;
   border: 2px #fff solid;
-  margin: 0 10px;
+  margin: 2px 0;
   padding: 3px 5px;
   font-size: 1.1rem;
 }
@@ -34,14 +45,15 @@ body {
 .color-blocks {
   
   display: flex;
-  flex-direction: row;
+  flex-direction: column;
 }
 .color-block {
   width: 30px;
   height: 30px;
+  border: 2px rgb(221, 220, 220) solid;
   border-radius: 50%;
 
-  margin: 0 10px;
+  margin: 5px;
 }
 .color-block .color-selected {
   border-color: rgba(0, 0, 0, 0.5);
@@ -50,15 +62,20 @@ body {
 .color-picker {
   min-width: 30px;
   height: 35px;
- 
+  margin:5px 0;
+
+}
+.width-bar {
+  width: 80%;
   margin: 0 10px;
 }
 .current-width {
+  color: #fff;
+
   width: 50px;
   height: 30px;
-  text-align: left;
-
+  text-align: center;
+  
   font-size: 1.3rem;
-  padding-top: 5px;
-  margin: 0 10px;
+  margin:  10px 0;
 }
