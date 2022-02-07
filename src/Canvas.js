@@ -1,11 +1,14 @@
 import "./Canvas.css";
 import Tools from "./Tools";
+import Countdown from "./Countdown";
+import useFetch from "./FetchData";
 import { useState, useEffect, useRef } from "react";
 
 
-const Canvas = ({imageData}) => {
+const Canvas = ({imageData,fetchData}) => {
 
 
+    //varieble for line width and color 
     const [isDrawing, setIsDrawing] = useState(false);
     const [lineWidth, setLineWidth] = useState(5);
     const [lineColor, setLineColor] = useState("black");
@@ -13,6 +16,8 @@ const Canvas = ({imageData}) => {
     //canvas and context refference
     const canvasRef = useRef(null);
     const ctxRef = useRef(null);
+    //a circle moving with the mouse
+    const cursorRef = useRef(null);
 
     //variable for undo
     const restroreArray = useRef([]);
@@ -23,18 +28,23 @@ const Canvas = ({imageData}) => {
 
         const canvas = canvasRef.current;
         canvas.height = 500;//window.innerHeight/1.25;
-        canvas.width = 600;//window.innerWidth/1.25;
+        canvas.width = 700;//window.innerWidth/1.25;
         
         const ctx = canvas.getContext('2d');
-        
+        //set white background
         ctx.lineCap = "round";
         ctx.lineJoin = "round";
         ctx.fillStyle = "white";
         ctx.fillRect(0, 0, canvas.width, canvas.height);
         ctxRef.current = ctx;
         
+        //initial cursor
+        cursorRef.current = document.querySelector(".canvas-cursor");
+        
+        fetchData();
         drawImage();
     }, []);
+
 
     // drawing functions
     const startDrawing = ({nativeEvent, pressure, pointerType}) => {
@@ -60,7 +70,7 @@ const Canvas = ({imageData}) => {
         if(restroreArray.current.length > 50){
             restroreArray.current.shift();
         }
-
+        //store canvas when finish line
         if(e.type === "pointerup"){
             storeCurrentData();
         }
@@ -68,12 +78,26 @@ const Canvas = ({imageData}) => {
     
     const draw = ({nativeEvent, pressure, pointerType}) => {
         
-        if(!isDrawing) return;
-        
         const {offsetX, offsetY} = nativeEvent;
-        //detect pressure when you draw
-        ctxRef.current.lineWidth = lineWidth * pressure * 2 ;
+
+        //stop function if cursor haven't initialized 
+        if(cursorRef.current === null) return;
+
+        //set the position and radius of the cursor
+        cursorRef.current.style.width = lineWidth + "px";
+        cursorRef.current.style.height = lineWidth + "px";
         
+        let rect = canvasRef.current.getBoundingClientRect();
+        cursorRef.current.style.left = offsetX + rect.left + 2 + "px";
+        cursorRef.current.style.top = offsetY + rect.top + 3 + "px"
+        
+        //stop function when not drawing(like just hover)
+        if(!isDrawing) return;
+
+        //detect pressure when you draw
+        ctxRef.current.lineWidth = lineWidth * pressure * 2;
+        
+        //draw the line
         ctxRef.current.lineTo(offsetX, offsetY);
         ctxRef.current.stroke();
         
@@ -81,6 +105,16 @@ const Canvas = ({imageData}) => {
         ctxRef.current.beginPath();
         ctxRef.current.moveTo(offsetX, offsetY);
            
+    }
+
+//======================function buttons==============================================
+    function clearCanvas(){
+        ctxRef.current.fillStyle = "white";
+        ctxRef.current.clearRect(0, 0, canvasRef.current.width, canvasRef.current.height);
+        ctxRef.current.fillRect(0, 0, canvasRef.current.width, canvasRef.current.height);
+    
+        restroreArray.current = [];
+        //storeCurrentData(); //clear is also a state 
     }
 
     function changeColor(id){
@@ -92,7 +126,7 @@ const Canvas = ({imageData}) => {
         setLineWidth(newWidth);
     }
     
-    // add new canvas data to restore array
+    // add current canvas data to restore array
     function storeCurrentData(){
         restroreArray.current.push(
             ctxRef.current.getImageData(
@@ -102,42 +136,59 @@ const Canvas = ({imageData}) => {
 
     //Draw the image loaded from server 
     function drawImage(){
+
+        //make a new
         let image = new Image();
         image.src = imageData;
         
         image.onload = () => {
             //draw according to rasio
-            ctxRef.current.drawImage(image,0,0,
-                canvasRef.current.height * image.width / image.height,
-                canvasRef.current.height);
-            
+            if(image.height > image.width){
+                ctxRef.current.drawImage(image,0,0,
+                    canvasRef.current.height * image.width / image.height,
+                    canvasRef.current.height);
+            }
+            else{
+                ctxRef.current.drawImage(image,0,0,
+                    canvasRef.current.width/1.3,
+                    canvasRef.current.width/1.3 * image.height / image.width);
+            }
             // add new canvas data to restore array
             storeCurrentData();
             
         } 
     }   
 
+
     return ( 
-        <div className="canvas-block">
-            <canvas id="canvas"
-                onPointerDown={startDrawing}
-                onPointerUp={finishDrawing}
-                onPointerOut={finishDrawing}
-                onPointerMove={draw}
-                ref={canvasRef}
-            ></canvas>
-            
-            <Tools 
-                canvasRef={canvasRef}
-                ctxRef={ctxRef}
-                lineWidth={lineWidth}
-                restroreArray={restroreArray}
-                changeColor={changeColor}   
-                changeLineWidth={changeLineWidth}
-                storeCurrentData={storeCurrentData}
-            
-            ></Tools>
-            
+        <div className="wrapper">
+            <div className="canvas-block">
+                <div className="canvas-cursor"></div>
+                <canvas id="canvas"
+                    onPointerDown={startDrawing}
+                    onPointerUp={finishDrawing}
+                    onPointerOut={finishDrawing}
+                    onPointerMove={draw}
+                    ref={canvasRef}
+                ></canvas>
+                
+                <Tools 
+                    canvasRef={canvasRef}
+                    ctxRef={ctxRef}
+                    lineWidth={lineWidth}
+                    restroreArray={restroreArray}
+                    clearCanvas={clearCanvas}
+                    changeColor={changeColor}   
+                    changeLineWidth={changeLineWidth}
+                
+                ></Tools>
+            </div>
+            <Countdown 
+                MaxTime = {120}
+                drawImage={drawImage} 
+                clearCanvas={clearCanvas} 
+                fetchData={fetchData}
+            ></Countdown>
         </div>
      );
 }

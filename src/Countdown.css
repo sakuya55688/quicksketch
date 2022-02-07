@@ -1,0 +1,55 @@
+/* countdown function */
+.countdown-block {
+    height: 40px;
+    position: relative;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    
+}
+
+#countdown-number {
+    width: 40px;
+    height: 40px;
+    color: rgb(22, 22, 22);
+    
+    line-height: 40px;
+    text-align: center;
+
+    font-size: 1.5rem;
+  }
+.countdown-btns {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    position: relative;
+    background-color: rgba(34, 34, 34, 1);
+
+    transition: 0.4s ease;
+}
+.countdown-btns:hover {
+   cursor: pointer;
+   background-color: rgba(78, 78, 78, 0.8);
+}
+.countdown-btns:active {
+    background-color: rgba(34, 34, 34, 1);
+ }
+.countdown-btns svg {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width:40px;
+    height: 40px;
+}
+.countdown-btns polygon {
+    fill: rgb(219, 219, 219);
+}
+
+#forward-btn {
+    margin-left: 20px;
+}
+
+#pause-btn {   
+    margin-right: 20px;
+}
+  

@@ -1,18 +1,13 @@
+import "./Tools.css";
+
 const Tools = ({
     canvasRef,ctxRef,lineWidth,restroreArray,
-    changeColor,changeLineWidth, storeCurrentData,
+    clearCanvas,changeColor,changeLineWidth
 }) => {
 
     const commonColors = ["red","blue","yellow","black","white"];
 
-    //clear button
-    function clearCanvas(){
-        ctxRef.current.fillStyle = "white";
-        ctxRef.current.clearRect(0, 0, canvasRef.current.width, canvasRef.current.height);
-        ctxRef.current.fillRect(0, 0, canvasRef.current.width, canvasRef.current.height);
     
-        storeCurrentData(); //clear is also a state 
-    }
     //undo Button
     function undo(){
         if(restroreArray.current.length > 1){
@@ -26,7 +21,7 @@ const Tools = ({
         }
     }
     
-    //upload button
+    //upload button for reference
     //Image drew from upload 
     /*
     function uploadImage(e){
@@ -65,7 +60,7 @@ const Tools = ({
             <input type="color" onInput={(e) => changeColor(e.target.value)} className="color-picker" />
             
             <input type="range" onInput={(e) => changeLineWidth(e.target.value)} className="width-bar" 
-                min={1} max={100} step={0.1} value={lineWidth}
+                min={1} max={40} step={0.1} value={lineWidth}
             />
             <output className="current-width">{lineWidth}</output>
             

@@ -2,6 +2,11 @@ body {
   touch-action: none;
 }
 
+.wrapper {
+  display: flex;
+  flex-direction: column;
+}
+
 .canvas-block {
   display: flex;
   flex-direction: row;
@@ -17,65 +22,12 @@ body {
   cursor: crosshair;
 }
 
-
-
-.tool-blocks {
-  min-width: 100px;
-  height: 500px;
-  display: flex;
-  justify-content: space-evenly;
-  flex-direction: column;
-  align-items: center;
-
-  background-color: #222;
-  border: 2px rgb(46, 46, 46) solid;
-  margin: 10px 5px;
-}
-.tool-btn {
-  height: 40px;
-  width: 80px;
-  color: #fff;
-  background-color: #222;
-  border: 2px #fff solid;
-  margin: 2px 0;
-  padding: 3px 5px;
-  font-size: 1.1rem;
-}
-
-.color-blocks {
-  
-  display: flex;
-  flex-direction: column;
-}
-.color-block {
-  width: 30px;
-  height: 30px;
-  border: 2px rgb(221, 220, 220) solid;
+.canvas-cursor {
+  width: 20px;
+  height: 20px;
   border-radius: 50%;
-
-  margin: 5px;
-}
-.color-block .color-selected {
-  border-color: rgba(0, 0, 0, 0.5);
-}
-
-.color-picker {
-  min-width: 30px;
-  height: 35px;
-  margin:5px 0;
-
-}
-.width-bar {
-  width: 80%;
-  margin: 0 10px;
-}
-.current-width {
-  color: #fff;
-
-  width: 50px;
-  height: 30px;
-  text-align: center;
-  
-  font-size: 1.3rem;
-  margin:  10px 0;
+  background-color: rgba(34, 34, 34, 0.342);
+  position: fixed;
+  pointer-events: none;
+  transform: translate(-50%, -50%);
 }

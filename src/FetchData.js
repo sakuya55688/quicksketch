@@ -1,19 +1,20 @@
 import { useEffect, useState } from "react";
 
-const useFetch = () => {
+const useFetch = (folderPath) => {
 
     const [imageData, setImageData] = useState(null);
     const [isPending, setIsPending] = useState(true);
-
-    useEffect(() => {
+    
+    const fetchData =  () => {
         //To successfully use cors 
-        //add cors in express server OR add proxy in react package.json
+        //add cors in express server OR add proxy in react package.json   
+        
         fetch("http://localhost:8080/image", {
-
-            method: "get",
+            method: "POST",
             headers: {
-                 "Content-Type": "image/jpeg"
+                 "Content-Type": "application/json"
             },
+            body: JSON.stringify({url:folderPath}),
         })
         .then(res => {
             if(!res.ok)
@@ -27,17 +28,15 @@ const useFetch = () => {
             setImageData(imageObjectURL);
             setIsPending(false); 
             
-            /*
-            let image = new Image();
-            image.src = imageObjectURL;
-            document.body.appendChild(image);
-            console.log(imageBlob);
-            */
         })
+    }
+    //automatically fetch once when render
+    useEffect(()=>{
+        
+        fetchData();
+    },[]);
     
 
-    }, []);
-
-    return {imageData,isPending};
+    return {imageData,isPending,fetchData};
 }
 export default useFetch;
