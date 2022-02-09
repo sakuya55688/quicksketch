@@ -9,11 +9,11 @@ import { useState } from 'react';
 function App() {
 
 	
-	const [folderPath,setFolderPath] = useState("/Users/sakuya/Downloads/圖片/pixiv");
+	const [folderPath,setFolderPath] = useState("");
 	
 	const {imageData,isPending,fetchData} = useFetch(folderPath);
 
-	
+	//function to change image url
 	const changeFolderPath = (url) => {
 		setFolderPath(url);
 	}

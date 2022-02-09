@@ -1,25 +1,13 @@
+import { useCallback, useEffect } from "react";
 import "./Tools.css";
 
 const Tools = ({
     canvasRef,ctxRef,lineWidth,restroreArray,
-    clearCanvas,changeColor,changeLineWidth
+    clearCanvas,undo,changeColor,changeLineWidth
 }) => {
 
     const commonColors = ["red","blue","yellow","black","white"];
-
     
-    //undo Button
-    function undo(){
-        if(restroreArray.current.length > 1){
-    
-            restroreArray.current.pop();
-            ctxRef.current.putImageData(restroreArray.current[restroreArray.current.length-1], 0, 0);
-        }
-        else if(restroreArray.current.length === 1){
-            restroreArray.current.pop();
-            clearCanvas();
-        }
-    }
     
     //upload button for reference
     //Image drew from upload 
@@ -63,7 +51,6 @@ const Tools = ({
                 min={1} max={40} step={0.1} value={lineWidth}
             />
             <output className="current-width">{lineWidth}</output>
-            
         </div>
      );
 }

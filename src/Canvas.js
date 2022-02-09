@@ -1,12 +1,13 @@
 import "./Canvas.css";
 import Tools from "./Tools";
 import Countdown from "./Countdown";
-import useFetch from "./FetchData";
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
+import { useNavigate } from "react-router-dom";
 
 
 const Canvas = ({imageData,fetchData}) => {
-
+    //react-dom
+    const navigate = useNavigate();
 
     //varieble for line width and color 
     const [isDrawing, setIsDrawing] = useState(false);
@@ -22,7 +23,7 @@ const Canvas = ({imageData,fetchData}) => {
     //variable for undo
     const restroreArray = useRef([]);
     
-
+    
     //initial canvas and context
     useEffect(() => {
 
@@ -43,6 +44,10 @@ const Canvas = ({imageData,fetchData}) => {
         
         fetchData();
         drawImage();
+
+        //keydown listener
+        document.addEventListener("keydown", keyboardDetection);
+
     }, []);
 
 
@@ -59,7 +64,6 @@ const Canvas = ({imageData,fetchData}) => {
         ctxRef.current.lineTo(offsetX , offsetY );
         ctxRef.current.stroke();
         draw({nativeEvent, pressure, pointerType});
-        
         
     }
     const finishDrawing = (e) => {
@@ -116,6 +120,17 @@ const Canvas = ({imageData,fetchData}) => {
         restroreArray.current = [];
         //storeCurrentData(); //clear is also a state 
     }
+    function undo(){
+        if(restroreArray.current.length > 1){
+    
+            restroreArray.current.pop();
+            ctxRef.current.putImageData(restroreArray.current[restroreArray.current.length-1], 0, 0);
+        }
+        else if(restroreArray.current.length === 1){
+            restroreArray.current.pop();
+            clearCanvas();
+        }
+    }
 
     function changeColor(id){
         let newColor = "" + id;
@@ -158,7 +173,20 @@ const Canvas = ({imageData,fetchData}) => {
             
         } 
     }   
-
+    
+    //detect certain keydown combination
+    const keyboardDetection = useCallback((event)=>{
+        //combination == ctrl + r, navigate back to Setting page.
+        if(event.keyCode == 82 && event.ctrlKey){
+            navigate("/");
+        }
+        //combination == ctrl + z, undo canvas once
+        if(event.keyCode == 90 && event.ctrlKey){
+            undo();
+        }
+            
+    },[]);
+    
 
     return ( 
         <div className="wrapper">
@@ -178,9 +206,10 @@ const Canvas = ({imageData,fetchData}) => {
                     lineWidth={lineWidth}
                     restroreArray={restroreArray}
                     clearCanvas={clearCanvas}
+                    undo={undo}
                     changeColor={changeColor}   
                     changeLineWidth={changeLineWidth}
-                
+
                 ></Tools>
             </div>
             <Countdown 

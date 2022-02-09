@@ -30,11 +30,10 @@ const useFetch = (folderPath) => {
             
         })
     }
-    //automatically fetch once when render
+    //automatically fetch once when folderPath change
     useEffect(()=>{
-        
         fetchData();
-    },[]);
+    },[folderPath]);
     
 
     return {imageData,isPending,fetchData};

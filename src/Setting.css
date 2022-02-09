@@ -1,0 +1,48 @@
+.setting-block {
+    width: 98vw;
+    height: 90vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-evenly;
+    align-items: center;
+}
+.setting-title {
+    font-size: 2.25rem;
+}
+
+.setting-block label,input,button {
+    text-align: center;
+    display: block;
+    margin: 5px auto;
+}
+.setting-block label {
+    margin-top: 40px;
+    font-size: 1.2rem;
+}
+.setting-block input[type=text] {
+    min-width: 40vw;
+    height: 30px;
+    border: 2px rgba(34, 34, 34, 0.61) solid;
+    border-radius: 5px;
+    box-sizing: border-box;
+}
+.setting-block input[type=range] {
+    min-width: 100%;
+
+    text-align: center;
+    border: 2px #222 solid;
+    border-radius: 5px;
+}
+.setting-block button {
+    font-size: 1.2rem;
+    padding: 8px 16px;
+    margin-top: 40px;
+    border-radius: 5px;
+    border: 2px rgba(85, 85, 85, 0.8) solid;
+    background-color: rgb(243, 242, 242);
+}
+.setting-block button:hover {
+    background-color: rgba(187, 185, 185, 0.5);
+    border: 2px rgba(85, 85, 85, 1) solid;
+    cursor: pointer;
+}
