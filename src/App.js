@@ -10,12 +10,13 @@ function App() {
 
 	
 	const [folderPath,setFolderPath] = useState("");
-	
+	const [drawingTime, setDrawingTime] = useState(0);
 	const {imageData,isPending,fetchData} = useFetch(folderPath);
 
 	//function to change image url
-	const changeFolderPath = (url) => {
+	const startSetting = (url,time) => {
 		setFolderPath(url);
+		setDrawingTime(time);
 	}
 
 
@@ -24,12 +25,12 @@ function App() {
 
 		<Routes>
 			<Route path="/" element={
-				<Setting changeFolderPath={changeFolderPath}/>
+				<Setting startSetting={startSetting}/>
 			}></Route>
 			
 			<Route path="/Canvas" element={
 				<div className="canvas-holder">
-        			{!isPending && <Canvas imageData={imageData} fetchData={fetchData}></Canvas>}
+        			{!isPending && <Canvas drawingTime={drawingTime} imageData={imageData} fetchData={fetchData}></Canvas>}
       			</div>
 			}
 			></Route>

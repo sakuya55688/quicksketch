@@ -8,16 +8,41 @@
     
 }
 
-#countdown-number {
+.countdown-number {
     width: 40px;
     height: 40px;
-    color: rgb(22, 22, 22);
     
+    position: relative;
     line-height: 40px;
     text-align: center;
-
     font-size: 1.5rem;
-  }
+
+}
+.countdown-number p {
+    font-size: 1.3rem;
+    width: 40px;
+    height: 40px;
+    margin: 0;
+
+}
+.countdown-number svg {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 40px;
+    height: 40px;
+
+    transform: rotate(-90deg);
+}
+.animation-circle {
+    stroke-width: 2px;
+    stroke: rgb(170, 62, 62);
+    fill: none;
+    stroke-dasharray: 120;
+    stroke-dashoffset: 120;
+    transition: all 0.9s linear;
+}
+
 .countdown-btns {
     width: 40px;
     height: 40px;
@@ -33,7 +58,7 @@
 }
 .countdown-btns:active {
     background-color: rgba(34, 34, 34, 1);
- }
+ } 
 .countdown-btns svg {
     position: absolute;
     left: 0;
@@ -45,11 +70,14 @@
     fill: rgb(219, 219, 219);
 }
 
-#forward-btn {
-    margin-left: 20px;
+#reset-btn {
+    position: absolute;
+    left: 20px;
+    top: 0;
 }
-
 #pause-btn {   
     margin-right: 20px;
 }
-  
+#forward-btn {
+    margin-left: 20px;
+}

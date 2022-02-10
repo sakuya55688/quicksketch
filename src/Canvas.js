@@ -5,7 +5,7 @@ import { useState, useEffect, useRef, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 
 
-const Canvas = ({imageData,fetchData}) => {
+const Canvas = ({drawingTime,imageData,fetchData}) => {
     //react-dom
     const navigate = useNavigate();
 
@@ -213,7 +213,7 @@ const Canvas = ({imageData,fetchData}) => {
                 ></Tools>
             </div>
             <Countdown 
-                MaxTime = {120}
+                MaxTime = {drawingTime}
                 drawImage={drawImage} 
                 clearCanvas={clearCanvas} 
                 fetchData={fetchData}

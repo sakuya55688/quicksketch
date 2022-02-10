@@ -1,7 +1,7 @@
 import "./Setting.css";
 import { Link, useNavigate } from "react-router-dom";
 
-const Setting = ({changeFolderPath}) => {
+const Setting = ({startSetting}) => {
     
     const navigate = useNavigate();
 
@@ -11,12 +11,10 @@ const Setting = ({changeFolderPath}) => {
 
         //get the data from input text
         let url = e.target.folderurl.value;
-        console.log(url);
-        
-        //check whether the url is empty
-        if(url+"" != ""){
-            changeFolderPath(url);
-        }
+        //data from range bar
+        let time = e.target.maxtime.value;
+
+        startSetting(url,time);
         navigate("/Canvas");
     }
 
@@ -27,9 +25,20 @@ const Setting = ({changeFolderPath}) => {
             <form onSubmit={handleSubmit}>
                 <label htmlFor="folder-url">Folder Path</label>
                 <input type="text" name="folderurl"/>
-                <label htmlFor="max-time">Counter Time</label>
-                <input type="range" name="max-time"/>
-
+                <label htmlFor="maxtime"  >Drawing Time</label>
+                <div className="time-range">
+                    <input type="range" name="maxtime" list="time-tick" min="15" max="120" step="15"/>
+                    <datalist id="time-tick">
+                        <option value="15">15</option>
+                        <option value="30">30</option>
+                        <option value="45">45</option>
+                        <option value="60">60</option>
+                        <option value="75">75</option>
+                        <option value="90">90</option>
+                        <option value="105">105</option>
+                        <option value="120">120</option>
+                    </datalist>
+                </div>
                 <button type="submit" >START</button>
             </form>
         </div>    

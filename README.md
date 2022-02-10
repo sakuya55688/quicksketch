@@ -11,3 +11,11 @@ Your images in your computer is a great resourse for practice your drawing skill
 - **Pen pressure** supported
 
 ## Demonstration
+1. Paste your image path
+2. Choose a time range you want to practice
+3. 
+* Draw with mouse 
+* Draw with Pressure Board
+4. Change color and line width
+5. Undo and Clear
+6. Pause and Next

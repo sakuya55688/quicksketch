@@ -26,13 +26,30 @@
     border-radius: 5px;
     box-sizing: border-box;
 }
-.setting-block input[type=range] {
+.time-range {
+    
+}
+
+.time-range input[type=range] {
     min-width: 100%;
 
     text-align: center;
     border: 2px #222 solid;
     border-radius: 5px;
 }
+.time-range datalist {
+    position: relative;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    user-select: none;
+}
+.time-range option {
+    width: 15px;
+    height: 8px;
+    padding: 0 1px ;
+}
+
 .setting-block button {
     font-size: 1.2rem;
     padding: 8px 16px;
